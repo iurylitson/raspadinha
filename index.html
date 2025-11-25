@@ -159,24 +159,34 @@
             color: #555;
         }
         
-        /* Caixa de Instrução "PRINT" */
-        #claim-instruction {
-            font-size: 1rem;
-            font-weight: 500;
-            text-align: center;
-            color: #f3f4f6;
+        /* Caixa de Instrução "PRINT" (REMOVIDA E SUBSTITUÍDA) */
+        
+        /* --- LÓGICA DO BOTÃO (Estilo "Insano Burguer") --- */
+        #claim-form {
             margin-top: 15px;
-            padding: 12px;
-            background-color: #1f2937;
-            border: 2px dashed #fcd34d; /* Amarelo */
-            border-radius: 8px;
             max-width: 330px;
-            line-height: 1.4;
+            width: 100%;
             display: none; /* Começa escondido */
         }
-        #claim-instruction.visible {
+        #claim-form.visible {
             display: block;
         }
+        
+        #claim-button {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2a9d8f; /* Cor verde (sucesso) */
+            color: white;
+            cursor: pointer;
+            width: 100%; /* Ocupa o espaço */
+            
+            /* Borda amarela que gostava */
+            border: 2px dashed #fcd34d;
+        }
+        /* --- FIM DO CSS DO BOTÃO --- */
         
         /* --- CSS DAS ANIMAÇÕES --- */
         #animation-overlay {
@@ -238,8 +248,17 @@
     <!-- Mensagem de resultado -->
     <h3 id="result-message"></h3>
     
-    <!-- Caixa de instrução para quem ganhar -->
-    <p id="claim-instruction"></p>
+    <!-- Caixa de instrução "PRINT" (REMOVIDA) -->
+    
+    <!-- 
+      NOVO FORMULÁRIO DE RESGATE (Estilo "Insano Burguer")
+      Ele só aparece se o cliente ganhar.
+    -->
+    <form id="claim-form">
+        <button id="claim-button" type="submit">
+            Resgatar Prêmio!
+        </button>
+    </form>
 
 
     <!-- HTML PARA O OVERLAY DA ANIMAÇÃO -->
@@ -278,7 +297,13 @@
         const prizeGridEl = document.getElementById('prize-grid');
         const resultMsgEl = document.getElementById('result-message');
         const gameTitleEl = document.getElementById('game-title');
-        const claimInstructionEl = document.getElementById('claim-instruction');
+        
+        /* REMOVIDO: const claimInstructionEl = document.getElementById('claim-instruction'); */
+        
+        /* ADICIONADO: Seletores do Formulário */
+        const claimFormEl = document.getElementById('claim-form');
+        const claimBtnEl = document.getElementById('claim-button');
+        
         const animationOverlayEl = document.getElementById('animation-overlay');
         const prizeAnimationWrapperEl = document.getElementById('prize-animation-wrapper');
         
@@ -287,7 +312,9 @@
 
         let gameFinished = false;
         let currentWinner = null;
-        const WA_PHONE = '5588997535202';
+        
+        /* ALTERADO: Número de WhatsApp atualizado */
+        const WA_PHONE = '5588988137381';
 
         // --- PARTE 4: FUNÇÕES DO JOGO ---
 
@@ -329,7 +356,9 @@
             resultMsgEl.textContent = '';
             resultMsgEl.className = '';
             gameTitleEl.textContent = "Raspe e encontre 3 iguais!";
-            claimInstructionEl.classList.remove('visible'); 
+            
+            /* ATUALIZADO: Esconde o formulário em vez da instrução */
+            claimFormEl.classList.remove('visible'); 
 
             // Pinta a camada de tinta
             ctx.globalCompositeOperation = 'source-over'; 
@@ -464,10 +493,28 @@
                 gameTitleEl.textContent = "Não foi desta vez!";
             } 
 
-            // LÓGICA DO "PRINT" (A sua solução)
+            // LÓGICA DO "PRINT" (REMOVIDA)
+            
+            // --- NOVA LÓGICA DO BOTÃO (Somente para Ganhadores) ---
             if (currentWinner) {
-                claimInstructionEl.textContent = "PRINT essa tela e envie para nosso whats e receba seu brinde";
-                claimInstructionEl.classList.add('visible');
+                // Prepara a mensagem
+                const finalEncodedMessage = encodeURIComponent(message + ' (Prêmio via Raspadinha)');
+                const finalWaLink = `https://wa.me/${WA_PHONE}?text=${finalEncodedMessage}`;
+
+                // Define o texto do botão
+                claimBtnEl.textContent = "Resgatar Prêmio!";
+
+                // LÓGICA DO "INSANO BURGUER" (Impede o recarregamento)
+                claimFormEl.onsubmit = function(event) {
+                    // 1. IMPEDE o formulário de recarregar a página
+                    event.preventDefault(); 
+                    
+                    // 2. Redireciona manualmente para o WhatsApp
+                    window.location.href = finalWaLink;
+                };
+
+                // Mostra o formulário (que contém o botão)
+                claimFormEl.classList.add('visible');
             }
             
             // CHAMA A ANIMAÇÃO
