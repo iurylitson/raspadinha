@@ -1,28 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-<meta charset='UTF-8'>
-<title>Raspadinha</title>
-<style>
-body{font-family:Arial;text-align:center;padding:40px;}
-#card{width:300px;height:150px;background:#ccc;margin:auto;padding-top:60px;font-size:24px;cursor:pointer;}
-.scratched{pointer-events:none;}
-</style>
-<script>
-function play(){
-  if(localStorage.getItem("raspadinha_usada")==="1"){
-    alert("Você já usou sua raspadinha!");
-    return;
-  }
-  const win = Math.random() < 0.1;
-  document.getElementById("card").innerText = win ? "🎉 Você ganhou!" : "😢 Não foi desta vez";
-  localStorage.setItem("raspadinha_usada","1");
-  document.getElementById("card").classList.add("scratched");
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspadinha Premiada</title>
+    
+    <!-- 1. Carrega a biblioteca de animação -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    
+    <!-- 2. Carrega o seu CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h2>Raspadinha</h2>
-<div id="card" onclick="play()">Raspe aqui</div>
+
+    <!-- Logos (do nosso projeto anterior) -->
+    <div class="logo-wrapper">
+      <a href="https://seusite1.com.br" target="_blank" rel="noopener noreferrer">
+        <img src="https://i.postimg.cc/1R2fzm3R/insano.png" alt="Logo 1" class="logo-img">
+      </a>
+      <a href="https://seusite2.com.br" target="_blank" rel="noopener noreferrer">
+        <img src="https://i.postimg.cc/mD6hCR37/burguer.png" alt="Logo 2" class="logo-img">
+      </a>
+    </div>
+
+    <h2 id="game-title">Raspadinha Premiada</h2>
+
+    <!-- 
+      Este é o cartão da raspadinha (do seu novo código). 
+      Ele chama a função play() quando é clicado.
+    -->
+    <div id="card" onclick="play()">Raspe aqui</div>
+    
+    <!-- 
+      Esta é a instrução de PRINT (do nosso projeto anterior).
+      Ela começa escondida.
+    -->
+    <p id="claim-instruction"></p>
+
+    <!-- 3. Carrega o seu JavaScript -->
+    <script src="script.js"></script>
+
 </body>
 </html>
