@@ -170,6 +170,34 @@
             display: block;
         }
         
+        /* --- CSS PARA O FORMULÁRIO DE RESGATE (Baseado no Insano Burguer) --- */
+        #claim-form {
+             visibility: hidden; /* Começa escondido */
+             opacity: 0;
+             transition: opacity 0.5s ease-in, visibility 0.5s;
+             width: 100%;
+             max-width: 330px; /* Alinhar com a raspadinha */
+             margin-top: 10px; /* Espaço depois da instrução de PRINT */
+        }
+        
+        #claim-form.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        #claim-button {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            background-color: #2a9d8f; /* Cor verde (sucesso) */
+            color: white;
+            cursor: pointer;
+            width: 100%; 
+        }
+        /* --- FIM DO NOVO CSS --- */
+        
         /* --- CSS DAS ANIMAÇÕES --- */
         #animation-overlay {
             position: fixed;
@@ -233,6 +261,14 @@
     <!-- Caixa de instrução para quem ganhar -->
     <p id="claim-instruction"></p>
 
+    <!-- NOVO: Formulário de resgate (baseado no Insano Burguer) -->
+    <!-- Isto só aparece se o cliente ganhar -->
+    <form id="claim-form">
+        <button id="claim-button" type="submit">
+            Resgatar Prêmio no WhatsApp
+        </button>
+    </form>
+
 
     <!-- HTML PARA O OVERLAY DA ANIMAÇÃO -->
     <div id="animation-overlay">
@@ -271,6 +307,7 @@
         const resultMsgEl = document.getElementById('result-message');
         const gameTitleEl = document.getElementById('game-title');
         const claimInstructionEl = document.getElementById('claim-instruction');
+        const claimFormEl = document.getElementById('claim-form'); // NOVO: O formulário
         const animationOverlayEl = document.getElementById('animation-overlay');
         const prizeAnimationWrapperEl = document.getElementById('prize-animation-wrapper');
         
@@ -279,7 +316,7 @@
 
         let gameFinished = false;
         let currentWinner = null;
-        const WA_PHONE = '5588997535202';
+        const WA_PHONE = '5588988137381'; // NÚMERO ATUALIZADO
 
         // --- PARTE 4: FUNÇÕES DO JOGO ---
 
@@ -322,6 +359,7 @@
             resultMsgEl.className = '';
             gameTitleEl.textContent = "Raspe e encontre 3 iguais!";
             claimInstructionEl.classList.remove('visible'); 
+            claimFormEl.classList.remove('visible'); // NOVO: Esconde o formulário
 
             // Pinta a camada de tinta
             ctx.globalCompositeOperation = 'source-over'; 
@@ -458,94 +496,12 @@
 
             // LÓGICA DO "PRINT" (A sua solução)
             if (currentWinner) {
+                // 1. Mostra a instrução de PRINT
                 claimInstructionEl.textContent = "PRINT essa tela e envie para nosso whats e receba seu brinde";
                 claimInstructionEl.classList.add('visible');
-            }
-            
-            // CHAMA A ANIMAÇÃO
-            triggerPrizeAnimation(currentWinner);
-        }
-
-        // Verifica a porcentagem raspada
-        function checkScratchedPercent() {
-            if (gameFinished) return;
-            
-            const imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-            const pixels = imageData.data;
-            const totalPixels = pixels.length / 4;
-            let transparentPixels = 0;
-            
-            for (let i = 3; i < pixels.length; i += 4) {
-                if (pixels[i] === 0) { // 0 = transparente
-                    transparentPixels++;
-                }
-            }
-
-            const percent = (transparentPixels / totalPixels) * 100;
-            
-            // Revela o prêmio se raspar mais de 60%
-            if (percent > 60) {
-                revealGame();
-            }
-        }
-
-        // --- PARTE 5: "OUVINTES" DE EVENTOS (Para raspar) ---
-        let isDrawing = false;
-        let lastX = 0;
-        let lastY = 0;
-
-        function startDrawing(e) {
-            if (gameFinished) return;
-            isDrawing = true;
-            const [x, y] = getEventPos(e);
-            [lastX, lastY] = [x, y];
-        }
-
-        function draw(e) {
-            if (!isDrawing || gameFinished) return;
-            e.preventDefault(); 
-            const [x, y] = getEventPos(e);
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            [lastX, lastY] = [x, y];
-        }
-
-        function stopDrawing() {
-            if (!isDrawing) return;
-            isDrawing = false;
-            // Verifica a % raspada quando o utilizador para
-            checkScratchedPercent();
-        }
-
-        function getEventPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            let x, y;
-            if (e.touches && e.touches.length > 0) {
-                x = e.touches[0].clientX - rect.left;
-                y = e.touches[0].clientY - rect.top;
-            } else {
-                x = e.clientX - rect.left;
-                y = e.clientY - rect.top;
-            }
-            return [x, y];
-        }
-
-        // Ouvintes do Mouse (PC)
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
-
-        // Ouvintes do Toque (Celular)
-        canvas.addEventListener('touchstart', startDrawing);
-        canvas.addEventListener('touchmove', draw);
-        canvas.addEventListener('touchend', stopDrawing);
-
-        // --- PARTE 6: INICIALIZAÇÃO ---
-        setupGame();
-    </script>
-
-</body>
-</html>
+                
+                // --- NOVA LÓGICA DO BOTÃO (Baseada no Insano Burguer) ---
+                
+                // 2. Prepara a mensagem para o WhatsApp
+                const finalEncodedMessage = encodeURIComponent(message + ' (Prêmio via Raspadinha)');
+                const finalWaLink =
