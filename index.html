@@ -277,18 +277,20 @@
             P50: { text: '50% OFF', emoji: '💰' },
             P10: { text: '10% OFF', emoji: '💸' },
             P5:  { text: '5% OFF',  emoji: '🪙' },
-            BURGER: { text: 'Hambúrguer Grátis!', emoji: HAMBURGER_IMG }
+            BURGER: { text: 'Hambúrguer Grátis!', emoji: HAMBURGER_IMG },
+            ENTREGA: { text: 'Entrega Grátis', emoji: '🛵' } // <-- ALTERADO PARA MOTO
         };
         const allPrizes = Object.values(prizes);
 
         // --- PARTE 2: LÓGICA DE PROBABILIDADE ---
         const outcomePool = [];
-        for (let i = 0; i < 3; i++) outcomePool.push(prizes.P50);
-        for (let i = 0; i < 5; i++) outcomePool.push(prizes.P10);
-        for (let i = 0; i < 20; i++) outcomePool.push(prizes.P5);
-        for (let i = 0; i < 2; i++) outcomePool.push(prizes.BURGER);
+        for (let i = 0; i < 3; i++) outcomePool.push(prizes.P50);        // 3%
+        for (let i = 0; i < 5; i++) outcomePool.push(prizes.P10);        // 5%
+        for (let i = 0; i < 20; i++) outcomePool.push(prizes.P5);       // 20%
+        for (let i = 0; i < 2; i++) outcomePool.push(prizes.BURGER);   // 2%
+        for (let i =  0; i < 10; i++) outcomePool.push(prizes.ENTREGA);  // 10% (ALTERADO)
         while (outcomePool.length < 100) {
-            outcomePool.push(null); // 70 "sem prêmio"
+            outcomePool.push(null); // 60% "sem prêmio" (Total 40% Ganhadores)
         }
 
         // --- PARTE 3: ELEMENTOS DO JOGO ---
@@ -382,7 +384,7 @@
                 // Se não ganhou, garante que não haja 3 iguais
                 gridItems = [
                     prizes.P50, prizes.P10, prizes.P5,
-                    prizes.P50, prizes.P10, prizes.BURGER
+                    prizes.P50, prizes.ENTREGA, prizes.BURGER // Troquei P10 por ENTREGA
                 ];
             }
 
@@ -455,6 +457,9 @@
                     break;
                 case '5% OFF':
                     prizeContent = `<span style="font-size: 10rem;">🪙</span>`;
+                    break;
+                case 'Entrega Grátis': // <-- ADICIONADO
+                    prizeContent = `<span style="font-size: 10rem;">🛵</span>`; // <-- ALTERADO PARA MOTO
                     break;
                 default:
                     return;
